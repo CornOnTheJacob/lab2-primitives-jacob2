@@ -6,23 +6,42 @@ public class PlayerController : MonoBehaviour
 {
     // Variable setup
     public float speed = 10.0f;
-    private float horizontalInput;
+    private float zBound = 6f;
+    private Rigidbody playerRb;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerRb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        PlayerMovement();
+        StayInBounds();
     }
 
-    void OnPlayerConnected()
+    // Moves the player
+    void PlayerMovement()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * speed);
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float veticalInput = Input.GetAxis("Vertical");
+
+        playerRb.AddForce(Vector3.forward * speed * veticalInput);
+        playerRb.AddForce(Vector3.right * speed * horizontalInput);
+    }
+
+    // Prevent player from leaving the screen
+    void StayInBounds()
+    {
+        if (playerRb.transform.position.z < -zBound)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, -zBound);
+        }
+        else if (playerRb.transform.position.z > zBound)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, zBound);
+        }
     }
 }
